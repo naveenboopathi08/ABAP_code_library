@@ -1,4 +1,4 @@
-*Simple AMDP class for fetch the sales data from VBAP & VBAP based on customer number.
+*Simple AMDP class for fetch the sales data from VBAK & VBAP table based on customer number.
 
 CLASS zcl_amdp_sales DEFINITION
   PUBLIC
