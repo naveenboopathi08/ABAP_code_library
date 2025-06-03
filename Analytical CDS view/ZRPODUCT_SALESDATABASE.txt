@@ -1,0 +1,16 @@
+@EndUserText.label : 'Product sales table'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zproduct_sales {
+
+  key client         : abap.clnt not null;
+  key sales_id       : sysuuid_x16 not null;
+  category_id        : abap.char(5);
+  category_name      : abap.char(30);
+  @Semantics.amount.currencyCode : 'zproduct_sales.currency_code'
+  total_sales_amount : abap.curr(15,2);
+  currency_code      : abap.cuky;
+
+}

@@ -1,0 +1,14 @@
+@AbapCatalog.sqlViewName: 'ZV_PROD_SALECUBE'
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Product sales cube'
+@Analytics.dataCategory: #CUBE
+define view ZI_PRODUCT_SALES_CUBE
+  as select from zproduct_sales
+{
+  key category_id,
+  key category_name,
+      @DefaultAggregation: #SUM
+      @Semantics.amount.currencyCode: 'currency_code'
+      total_sales_amount,
+      currency_code
+}

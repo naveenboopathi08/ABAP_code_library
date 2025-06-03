@@ -1,0 +1,62 @@
+CLASS zcl_insert_product_sales DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+ENDCLASS.
+
+CLASS zcl_insert_product_sales IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+    DATA lt_sales TYPE STANDARD TABLE OF zproduct_sales.
+    DATA ls_sales TYPE zproduct_sales.
+    TYPES: BEGIN OF ty_category,
+             id   TYPE char5,
+             name TYPE char20,
+           END OF ty_category.
+
+    DATA lt_categories TYPE STANDARD TABLE OF ty_category WITH EMPTY KEY.
+    lt_categories = VALUE #(
+      ( id = 'CAT01' name = 'Electronics' )
+      ( id = 'CAT02' name = 'Books' )
+      ( id = 'CAT03' name = 'Clothing' )
+      ( id = 'CAT04' name = 'Groceries' )
+      ( id = 'CAT05' name = 'Sports' )
+    ).
+
+    DATA: lv_index       TYPE i,
+          lv_cat_index   TYPE i,
+          lv_random_amt  TYPE i,
+          ls_category    TYPE ty_category.
+
+    " Random number generator object (BTP-compliant)
+    DATA(lo_rand) = cl_abap_random_int=>create(
+                      seed = cl_abap_random=>seed( )
+                      min  = 1000
+                      max  = 5000 ).
+
+    DO 100 TIMES.
+      lv_index = sy-index.
+      lv_cat_index = ( lv_index MOD lines( lt_categories ) ) + 1.
+      READ TABLE lt_categories INTO ls_category INDEX lv_cat_index.
+      lv_random_amt = lo_rand->get_next( ).
+      CLEAR ls_sales.
+      ls_sales-client             = sy-mandt.
+      ls_sales-sales_id          = cl_system_uuid=>create_uuid_x16_static( ).
+      ls_sales-category_id       = ls_category-id.
+      ls_sales-category_name     = ls_category-name.
+      ls_sales-total_sales_amount = lv_random_amt.
+      ls_sales-currency_code     = 'USD'.
+
+      APPEND ls_sales TO lt_sales.
+    ENDDO.
+
+    DELETE FROM zproduct_sales.
+
+    INSERT zproduct_sales FROM TABLE @lt_sales.
+
+    out->write( | 100 unique records inserted successfully into ZPRODUCT_SALES.| ).
+  ENDMETHOD.
+ENDCLASS.
